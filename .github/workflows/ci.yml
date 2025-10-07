@@ -17,6 +17,13 @@ jobs:
           go-version: "1.25.1"
       - name: Run unit tests with coverage
         run: go test -cover ./...
+      
+        # --- Security scan (intentionally fail first run) ---
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+      - name: Run gosec
+        run: gosec ./...
 
   style:
     name: Style
@@ -39,9 +46,3 @@ jobs:
       - name: Lint with staticcheck
         run: staticcheck ./...
       
-        # --- Security scan (intentionally fail first run) ---
-      - name: Install gosec
-        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
-
-      - name: Run gosec
-        run: gosec ./...
