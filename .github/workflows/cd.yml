@@ -21,17 +21,22 @@ jobs:
       - name: Build production binary
         run: ./scripts/buildprod.sh
 
-      # Install gcloud and authenticate with service account JSON
+      # 🔐 Authenticate to Google Cloud using the service account JSON
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # 📦 Install gcloud and configure the project
       - name: Set up gcloud
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: notely-478601
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
-          export_default_credentials: true
 
-      # Build & push Docker image via Cloud Build
+      # 🚀 Build & push Docker image via Cloud Build
       - name: Build and push image with Cloud Build
-        run: >
-          gcloud builds submit
-          --tag us-central1-docker.pkg.dev/notely-478601/notely-ar-repo/notely:latest
-          .
+        run: |
+          gcloud builds submit \
+            --tag us-central1-docker.pkg.dev/notely-478601/notely-ar-repo/notely:latest \
+            .
