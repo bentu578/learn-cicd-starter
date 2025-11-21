@@ -21,15 +21,20 @@ jobs:
       - name: Build production binary
         run: ./scripts/buildprod.sh
 
-      # ---- Authenticate to GCP using service account key ----
+      
+      # ---- Authenticate to GCP using the service account key ----
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # ---- Install and configure gcloud CLI ----
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: notely-478601
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
-          export_default_credentials: true
 
-      # ---- Build & push Docker image to Artifact Registry via Cloud Build ----
+      # ---- Build & push Docker image via Cloud Build ----
       - name: Build and push image with Cloud Build
         run: >
           gcloud builds submit
